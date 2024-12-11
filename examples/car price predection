@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Đọc dữ liệu
+data = pd.read_csv('car_price_data.csv')  # Đảm bảo đường dẫn tới tệp dữ liệu chính xác
+
+# Xử lý giá trị thiếu
+data = data.dropna()
+
+# Chọn các cột cho mô hình
+X = data[['advertising_cost', 'mileage', 'year']]  # Các yếu tố ảnh hưởng
+y = data['price']  # Cột mục tiêu: giá ô tô
+
+# Chia dữ liệu thành tập huấn luyện và kiểm tra
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Tạo mô hình hồi quy tuyến tính
+model = LinearRegression()
+
+# Huấn luyện mô hình
+model.fit(X_train, y_train)
+
+# Dự đoán trên tập kiểm tra
+y_pred = model.predict(X_test)
+
+# Đánh giá mô hình
+mse = mean_squared_error(y_test, y_pred)
+print(f'Mean Squared Error: {mse}')
+
+# Vẽ biểu đồ hồi quy tuyến tính
+plt.figure(figsize=(10, 6))
+plt.scatter(X_test['advertising_cost'], y_test, color='blue', label='Dữ liệu thực tế')
+plt.scatter(X_test['advertising_cost'], y_pred, color='red', label='Dự đoán')
+plt.xlabel('Chi phí quảng cáo')
+plt.ylabel('Giá ô tô')
+plt.title('Dự đoán giá ô tô theo chi phí quảng cáo')
+plt.legend()
+plt.show()
